@@ -3,8 +3,11 @@ var searchBtn = document.getElementById("searchbtn");
 var sidebarEl = document.getElementById("sidebar");
 var todayEl = document.getElementById("today");
 var fivedayEl = document.getElementById("five-day");
+var historyDiv = document.getElementById("history-div");
 var ls = window.localStorage;
+var numBtns = 0;
 
+//Allow user to use search button or Enter key to input
 searchEl.addEventListener("keyup", function (event) {
     if (event.key === "Enter") {
         // Cancel the default action, if needed
@@ -14,9 +17,34 @@ searchEl.addEventListener("keyup", function (event) {
     }
 });
 
+//draw buttons/forecast based on localStorage
 var init = function () {
+    var searchHistory = JSON.parse(ls.getItem('searchHistory')) || [];
+    var maxBtns = 5;
+    var i = 0;
+    if (searchHistory) {
+        while (maxBtns > 0 && i < searchHistory.length && numBtns <= maxBtns) {
+            var city = searchHistory[i];
+            addHistoryBtn(city);
+            numBtns++;
+            maxBtns--;
+            i++;
+        }
+    }
+    if (ls.getItem('lastSearched')) {
+        apiCall(ls.getItem('lastSearched'));
+    }
 }
 
+//helper fct to add buttons to the search history
+var addHistoryBtn = function (city) {
+    var historyBtn = document.createElement('button');
+    historyBtn.innerText = city;
+    historyBtn.onclick = apiCall(city);
+    historyDiv.append(historyBtn);
+}
+
+//get forecast data from api call
 var generateForecast = function (data, isToday, outputEl) {
     var tempEl = document.createElement('h3');
     var windEl = document.createElement('h3');
@@ -34,13 +62,14 @@ var generateForecast = function (data, isToday, outputEl) {
     }
 }
 
+//onClick function used for searching
 var searchHandle = function () {
     var inputText = searchEl.value;
     apiCall(inputText);
 }
 
+//render the today's forecast as well as future 5-day forecast
 var renderForecast = function (weatherJSON, cityName) {
-    console.log(weatherJSON);
     var dateString = moment.unix(weatherJSON.current.dt).format("MM/DD/YYYY");
     var cityHeader = document.createElement('h1');
     cityHeader.innerText = `${cityName} (${dateString})`;
@@ -77,16 +106,21 @@ var renderForecast = function (weatherJSON, cityName) {
     }
 }
 
+//clear window to render new forecast
 var clearRender = function (el) {
     while (el.firstChild) {
         el.removeChild(el.firstChild);
     }
 }
 
+//handle when input entered is not a place that exists
 var handleBadrequest = function () {
-    console.log("You did bad job searching :(");
+    alert("Invalid input. Please enter a real place.");
 }
 
+
+//api handler function. takes input city name and calls render functions
+//updates localstorage history
 var apiCall = function (cityName) {
     cityName = cityName.toLowerCase();
     var requestURL = "https://api.openweathermap.org/geo/1.0/direct?q=" + cityName + "&appid=2613830090fb57ce193f5f9c35c9f396";
@@ -109,9 +143,16 @@ var apiCall = function (cityName) {
                     clearRender(todayEl);
                     clearRender(fivedayEl);
                     ls.setItem('lastSearched', cityName);
-                    var searchHistory = JSON.parse(ls.getItem('history')) || [];
-                    searchHistory.push(cityName);
-                    ls.setItem('searchHistory', searchHistory);)
+                    var searchHistory = JSON.parse(ls.getItem('searchHistory')) || [];
+                    if (!searchHistory.includes(cityName)) {
+                        searchHistory.push(cityName);
+                        if (numBtns < 5) {
+                            addHistoryBtn(cityName);
+                        } else {
+                            historyDiv.removeChild()
+                        }
+                    }
+                    ls.setItem('searchHistory', JSON.stringify(searchHistory));
                     renderForecast(data, cityName);
                 });
         })
@@ -119,3 +160,5 @@ var apiCall = function (cityName) {
             handleBadrequest();
         });
 }
+
+init();
