@@ -1,14 +1,112 @@
+html, body {
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin: 0;
+    min-height: 100%;
+}
+
+h1 {
+    font-size: 200%;
+}
+
 header {
-    background-color: blue;
+    background-color: #122C34;
     text-align: center;
     color: white;
     margin-bottom: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-image: linear-gradient(to right, #122C34 , #2d9bbd);
+}
+
+section {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin-right: 3rem;
 }
 
 header h1 {
     margin: 0;
 }
 
+main {
+    display: flex;
+    
+    height: 100%;
+}
+
+input {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 1.4rem;
+    margin-bottom: .6rem;
+    border-radius: .3rem;
+    padding: .1rem;
+}
+
+button {
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1.2rem;
+    width: 100%;
+    padding: .5rem;
+    border-radius: .3rem;
+    margin: .2rem 0 .2rem 0;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
 img {
-    height: 2rem;
+    height: 4rem;
+}
+
+#searchbtn {
+    background-color: rgb(117, 172, 223);
+    color: white;
+}
+
+#sidebar {
+    width: 20%;
+    justify-content: center;
+    height: 100%;
+    padding: 1rem;
+    padding-right: 3rem;
+}
+
+#today {
+    border: 3px solid black;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-top: 1rem;
+    margin-right: 1rem;
+}
+
+#today h1 {
+    margin-top: 0;
+}
+
+#five-day {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-right: 1rem;
+    margin-top: 6rem;
+}
+
+#five-day h2 {
+    flex-basis: 100%;
+}
+
+#five-day div {
+    width: 10rem;
+    padding: 0 2rem 0 2rem;
+    background-color: #44CFCB;
+    border-radius: 4px;
+    margin: .5rem
 }
