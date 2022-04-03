@@ -95,7 +95,7 @@ var renderForecast = function (weatherJSON, cityName) {
         dayEl.append(dateEl);
         var icon = document.createElement('img');
         icon.setAttribute('src', `http://openweathermap.org/img/wn/${weatherJSON.daily[0].weather[0].icon}.png`);
-        dayEl.append(icon);
+        dateEl.append(icon);
         futureTemp = day.temp.day;
         futureWind_speed = day.wind_speed;
         futureHumidity = day.humidity;
