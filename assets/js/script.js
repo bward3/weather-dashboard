@@ -4,8 +4,10 @@ var sidebarEl = document.getElementById("sidebar");
 var todayEl = document.getElementById("today");
 var fivedayEl = document.getElementById("five-day");
 var historyDiv = document.getElementById("history-div");
+var mainEl = document.getElementById("main-display");
 var ls = window.localStorage;
 var numBtns = 0;
+var maxBtns = 15;
 
 //Allow user to use search button or Enter key to input
 searchEl.addEventListener("keyup", function (event) {
@@ -20,14 +22,12 @@ searchEl.addEventListener("keyup", function (event) {
 //draw buttons/forecast based on localStorage
 var init = function () {
     var searchHistory = JSON.parse(ls.getItem('searchHistory')) || [];
-    var maxBtns = 5;
     var i = 0;
     if (searchHistory) {
-        while (maxBtns > 0 && i < searchHistory.length && numBtns <= maxBtns) {
+        while (i < searchHistory.length && numBtns <= maxBtns) {
             var city = searchHistory[i];
             addHistoryBtn(city);
             numBtns++;
-            maxBtns--;
             i++;
         }
     }
@@ -40,8 +40,9 @@ var init = function () {
 var addHistoryBtn = function (city) {
     var historyBtn = document.createElement('button');
     historyBtn.innerText = city;
-    historyBtn.onclick = apiCall(city);
-    historyDiv.append(historyBtn);
+    //add an onclick function to get city's weather info
+    historyBtn.setAttribute('onclick', `apiCall('${city}')`);
+    historyDiv.prepend(historyBtn);
 }
 
 //get forecast data from api call
@@ -55,6 +56,7 @@ var generateForecast = function (data, isToday, outputEl) {
     outputEl.append(tempEl);
     outputEl.append(windEl);
     outputEl.append(humidityEl);
+    //uvi only measured day-of, so 5-day forecast tabs won't have
     if (isToday) {
         var uviEl = document.createElement('h3');
         uviEl.innerHTML = `UV Index: <span>${data[3]}</span>`;
@@ -74,18 +76,23 @@ var renderForecast = function (weatherJSON, cityName) {
     var cityHeader = document.createElement('h1');
     cityHeader.innerText = `${cityName} (${dateString})`;
     todayEl.append(cityHeader);
+
+    //get icon for current weather
     var icon = document.createElement('img');
     icon.setAttribute('src', `http://openweathermap.org/img/wn/${weatherJSON.current.weather[0].icon}.png`);
-    cityHeader.append(icon);
+    todayEl.append(icon);
+
     var temp = weatherJSON.current.temp;
     var wind_speed = weatherJSON.current.wind_speed;
     var humidity = weatherJSON.current.humidity;
     var uvi = weatherJSON.current.uvi;
     var forecast = [temp, wind_speed, humidity, uvi];
     generateForecast(forecast, true, todayEl);
+
     var fiveDayHeader = document.createElement('h2');
     fiveDayHeader.innerText = '5-Day Forecast';
     fivedayEl.append(fiveDayHeader);
+
     for (i = 0; i < 5; i++) {
         var dayEl = document.createElement('div');
         day = weatherJSON.daily[i];
@@ -129,6 +136,7 @@ var apiCall = function (cityName) {
             return response.json();
         })
         .then(function (data) {
+            //get city location data from name
             cityName = data[0].name;
             var lat = data[0].lat;
             var lon = data[0].lon;
@@ -146,10 +154,10 @@ var apiCall = function (cityName) {
                     var searchHistory = JSON.parse(ls.getItem('searchHistory')) || [];
                     if (!searchHistory.includes(cityName)) {
                         searchHistory.push(cityName);
-                        if (numBtns < 5) {
+                        if (numBtns < maxBtns) {
                             addHistoryBtn(cityName);
                         } else {
-                            historyDiv.removeChild()
+                            historyDiv.removeChild();
                         }
                     }
                     ls.setItem('searchHistory', JSON.stringify(searchHistory));
