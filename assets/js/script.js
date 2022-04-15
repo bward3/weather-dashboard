@@ -15,7 +15,7 @@ searchEl.addEventListener("keyup", function (event) {
         // Cancel the default action, if needed
         event.preventDefault();
         // Trigger the button element with a click
-        searchBtn.click()
+        searchBtn.click();
     }
 });
 
@@ -79,7 +79,7 @@ var renderForecast = function (weatherJSON, cityName) {
 
     //get icon for current weather
     var icon = document.createElement('img');
-    icon.setAttribute('src', `http://openweathermap.org/img/wn/${weatherJSON.current.weather[0].icon}.png`);
+    icon.setAttribute('src', `https://openweathermap.org/img/wn/${weatherJSON.current.weather[0].icon}.png`);
     todayEl.append(icon);
 
     var temp = weatherJSON.current.temp;
@@ -101,7 +101,7 @@ var renderForecast = function (weatherJSON, cityName) {
         dateEl.innerText = dateString;
         dayEl.append(dateEl);
         var icon = document.createElement('img');
-        icon.setAttribute('src', `http://openweathermap.org/img/wn/${weatherJSON.daily[0].weather[0].icon}.png`);
+        icon.setAttribute('src', `https://openweathermap.org/img/wn/${weatherJSON.daily[0].weather[0].icon}.png`);
         dateEl.append(icon);
         futureTemp = day.temp.day;
         futureWind_speed = day.wind_speed;
